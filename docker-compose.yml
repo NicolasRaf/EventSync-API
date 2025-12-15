@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:15-alpine  # Versão leve do Postgres
+    container_name: pg_ads_project # Nome para facilitar identificação
+    ports:
+      - "5432:5432" # Mapeia a porta do container para seu Windows
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: eventsync_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persistência de dados
+    networks:
+      - app-network
+
+volumes:
+  pgdata: # Cria um volume gerenciado pelo Docker para não perder dados ao desligar
+
+networks:
+  app-network:
+    driver: bridge

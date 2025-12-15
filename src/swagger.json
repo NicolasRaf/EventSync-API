@@ -1,0 +1,160 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "EventSync API",
+    "description": "API for Event Management",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "summary": "Create a new user",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["name", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "400": { "description": "User already exists" }
+        }
+      }
+    },
+    "/sessions": {
+      "post": {
+        "summary": "Authenticate user",
+        "tags": ["Sessions"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Token generated" },
+          "400": { "description": "Incorrect email or password" }
+        }
+      }
+    },
+    "/events": {
+      "get": {
+        "summary": "List all events",
+        "tags": ["Events"],
+        "responses": {
+          "200": { "description": "List of events" }
+        }
+      },
+      "post": {
+        "summary": "Create a new event",
+        "tags": ["Events"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "description": { "type": "string" },
+                  "date": { "type": "string", "format": "date-time" },
+                  "location": { "type": "string" }
+                },
+                "required": ["title", "description", "date", "location"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Event created" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/events/{id}/registrations": {
+      "post": {
+        "summary": "Register user to an event",
+        "tags": ["Events"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Registration created" },
+          "400": { "description": "User already registered" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/events/{id}/check-in": {
+      "post": {
+        "summary": "Perform user check-in",
+        "tags": ["Events"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "participantId": { "type": "string" }
+                },
+                "required": ["participantId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Check-in successful" },
+          "400": { "description": "Registration not found or User already checked in" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    }
+  }
+}
