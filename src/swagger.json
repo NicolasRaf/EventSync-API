@@ -155,6 +155,93 @@
           "401": { "description": "Unauthorized" }
         }
       }
+    },
+    "/registrations": {
+      "get": {
+        "summary": "List all user registrations",
+        "tags": ["Events"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of registrations" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/events/{id}": {
+      "get": {
+        "summary": "Get event details",
+        "tags": ["Events"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { 
+            "description": "Event details including organizer information and restricted participant list",
+             "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                     "id": { "type": "string" },
+                     "title": { "type": "string" },
+                     "description": { "type": "string" },
+                     "date": { "type": "string" },
+                     "location": { "type": "string" },
+                     "organizer": { 
+                       "type": "object",
+                       "properties": {
+                         "id": { "type": "string" },
+                         "name": { "type": "string" },
+                         "email": { "type": "string" }
+                       }
+                     },
+                     "participants": {
+                        "type": "array",
+                        "items": {
+                           "type": "object",
+                           "properties": {
+                              "id": { "type": "string" },
+                              "name": { "type": "string" }
+                           }
+                        }
+                     }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Event not found" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/users/{id}/friend-request": {
+      "post": {
+        "summary": "Send a friend request",
+        "description": "Send a friend request to another user. Both users must be registered for at least one common event.",
+        "tags": ["Social"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user to receive the friend request",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Friend request sent successfully" },
+          "400": { "description": "Friendship already exists or users do not share a common event" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
     }
   }
 }

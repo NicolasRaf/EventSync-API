@@ -25,5 +25,10 @@ container.registerSingleton<IRegistrationsRepository>(
   RegistrationsRepository
 );
 
+import { IFriendshipsRepository } from "../../modules/social/repositories/IFriendshipsRepository";
+import { FriendshipsRepository } from "../../modules/social/repositories/implementations/FriendshipsRepository";
 
-
+container.registerSingleton<IFriendshipsRepository>(
+  "FriendshipsRepository",
+  FriendshipsRepository
+);

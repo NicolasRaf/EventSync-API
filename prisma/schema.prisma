@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -17,10 +17,15 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relação inversa: Um usuário pode organizar vários eventos
-  events  Event[]
+  events Event[]
 
   // Adicione esta linha: Inscrições que ele fez como participante
+
   registrations Registration[]
+
+  // Amizades
+  sentFriendRequests     Friendship[] @relation("Requester")
+  receivedFriendRequests Friendship[] @relation("Addressee")
 
   @@map("users")
 }
@@ -31,13 +36,13 @@ model Event {
   description String
   date        DateTime
   location    String
-  
+
   // Relacionamento com User (Organizador)
   organizerId String
-  organizer User @relation(fields: [organizerId], references: [id])
+  organizer   User   @relation(fields: [organizerId], references: [id])
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Inscrições que ele fez como participante
   registrations Registration[]
@@ -46,17 +51,17 @@ model Event {
 }
 
 model Registration {
-  id        String   @id @default(uuid())
-  date      DateTime @default(now())
-  
+  id   String   @id @default(uuid())
+  date DateTime @default(now())
+
   // Adicione este campo novo:
   checkedInAt DateTime? // O ponto de interrogação diz que pode ser nulo (ainda não entrou)
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  
-  eventId   String
-  event     Event    @relation(fields: [eventId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
 
   @@unique([userId, eventId])
   @@map("registrations")
@@ -66,4 +71,16 @@ enum Role {
   ADMIN
   ORGANIZER
   PARTICIPANT
+}
+
+model Friendship {
+  id          String   @id @default(uuid())
+  requesterId String
+  requester   User     @relation("Requester", fields: [requesterId], references: [id])
+  addresseeId String
+  addressee   User     @relation("Addressee", fields: [addresseeId], references: [id])
+  status      String   @default("PENDING") // PENDING, ACCEPTED
+  createdAt   DateTime @default(now())
+
+  @@map("friendships")
 }

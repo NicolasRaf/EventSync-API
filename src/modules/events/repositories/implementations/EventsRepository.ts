@@ -1,4 +1,4 @@
-import { Prisma, Event, PrismaClient } from "@prisma/client";
+import { Prisma, Event, PrismaClient, Registration } from "@prisma/client";
 import { IEventsRepository } from "../IEventsRepository";
 
 // Assumption: PrismaClient is instantiated here as per previous pattern.
@@ -27,6 +27,36 @@ export class EventsRepository implements IEventsRepository {
       },
     });
     return events;
+  }
+
+  async findById(id: string): Promise<Event | null> {
+    const event = await prisma.event.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        organizer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+    return event;
+  }
+
+  async findRegistrationsByUserId(userId: string): Promise<Registration[]> {
+    const registrations = await prisma.registration.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        event: true,
+      },
+    });
+    return registrations;
   }
 }
 

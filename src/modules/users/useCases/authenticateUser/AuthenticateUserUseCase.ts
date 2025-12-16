@@ -12,6 +12,8 @@ interface IAuthenticateUserResponse {
   user: {
     name: string;
     email: string;
+    id: string;
+    role: string;
   };
   token: string;
 }
@@ -46,6 +48,8 @@ export class AuthenticateUserUseCase {
       user: {
         name: user.name,
         email: user.email,
+        id: user.id,
+        role: (user as any).role,
       },
     };
 

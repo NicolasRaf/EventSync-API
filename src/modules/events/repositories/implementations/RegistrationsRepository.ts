@@ -23,6 +23,18 @@ export class RegistrationsRepository implements IRegistrationsRepository {
     return registration;
   }
 
+  async findByEvent(eventId: string): Promise<Registration[]> {
+    const registrations = await prisma.registration.findMany({
+      where: {
+        eventId,
+      },
+      include: {
+        user: true,
+      },
+    });
+    return registrations;
+  }
+
   async update(registration: Registration): Promise<Registration> {
     const updatedRegistration = await prisma.registration.update({
       where: {
