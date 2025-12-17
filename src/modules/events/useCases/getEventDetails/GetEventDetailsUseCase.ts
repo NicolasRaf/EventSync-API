@@ -11,16 +11,20 @@ interface IResponse {
   }[];
 }
 
+import { IReviewsRepository } from "../../repositories/IReviewsRepository";
+
 @injectable()
 export class GetEventDetailsUseCase {
   constructor(
     @inject("EventsRepository")
     private eventsRepository: IEventsRepository,
     @inject("RegistrationsRepository")
-    private registrationsRepository: IRegistrationsRepository
+    private registrationsRepository: IRegistrationsRepository,
+    @inject("ReviewsRepository")
+    private reviewsRepository: IReviewsRepository
   ) {}
 
-  async execute(eventId: string): Promise<any> {
+  async execute(eventId: string, userId: string): Promise<any> {
     const event = await this.eventsRepository.findById(eventId);
 
     if (!event) {
@@ -36,9 +40,16 @@ export class GetEventDetailsUseCase {
       name: reg.user.name,
     }));
 
+    let userHasReviewed = false;
+    if (userId) {
+       const review = await this.reviewsRepository.findByUserAndEvent(userId, eventId);
+       userHasReviewed = !!review;
+    }
+
     return {
       ...event,
       participants,
+      userHasReviewed
     };
   }
 }

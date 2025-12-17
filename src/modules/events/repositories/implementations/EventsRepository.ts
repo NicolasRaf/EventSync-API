@@ -53,10 +53,36 @@ export class EventsRepository implements IEventsRepository {
         userId,
       },
       include: {
-        event: true,
+        event: {
+          include: {
+            reviews: {
+              where: {
+                userId,
+              },
+            },
+          },
+        },
       },
     });
+
     return registrations;
   }
-}
 
+  async update(id: string, data: Prisma.EventUpdateInput): Promise<Event> {
+    const updatedEvent = await prisma.event.update({
+      where: {
+        id,
+      },
+      data,
+    });
+    return updatedEvent;
+  }
+
+  async delete(id: string): Promise<void> {
+    await prisma.event.delete({
+      where: {
+        id,
+      },
+    });
+  }
+}

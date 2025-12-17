@@ -5,5 +5,7 @@ export interface IEventsRepository {
   listAll(): Promise<Event[]>;
   findById(id: string): Promise<Event | null>;
   findRegistrationsByUserId(userId: string): Promise<Registration[]>;
+  update(id: string, data: Prisma.EventUpdateInput): Promise<Event>;
+  delete(id: string): Promise<void>;
 }
 

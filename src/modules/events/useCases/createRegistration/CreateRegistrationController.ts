@@ -17,11 +17,15 @@ export class CreateRegistrationController {
 
     const createRegistrationUseCase = container.resolve(CreateRegistrationUseCase);
 
-    const registration = await createRegistrationUseCase.execute({
-      userId,
-      eventId,
-    });
+    try {
+      const registration = await createRegistrationUseCase.execute({
+        userId,
+        eventId,
+      });
 
-    return response.status(201).json(registration);
+      return response.status(201).json(registration);
+    } catch (error) {
+       throw error;
+    }
   }
 }

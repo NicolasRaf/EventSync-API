@@ -35,6 +35,15 @@ export class RegistrationsRepository implements IRegistrationsRepository {
     return registrations;
   }
 
+  async findByUserId(userId: string): Promise<Registration[]> {
+    const registrations = await prisma.registration.findMany({
+      where: {
+        userId,
+      },
+    });
+    return registrations;
+  }
+
   async update(registration: Registration): Promise<Registration> {
     const updatedRegistration = await prisma.registration.update({
       where: {
@@ -43,6 +52,48 @@ export class RegistrationsRepository implements IRegistrationsRepository {
       data: registration,
     });
     return updatedRegistration;
+  }
+
+  async findById(id: string): Promise<Registration | null> {
+    const registration = await prisma.registration.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        event: true, // Including event to check ownership later
+      }
+    });
+    return registration;
+  }
+
+  async updateStatus(id: string, status: string): Promise<void> {
+    await prisma.registration.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+      },
+    });
+  }
+
+  async deleteById(id: string): Promise<void> {
+    await prisma.registration.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async delete(userId: string, eventId: string): Promise<void> {
+    await prisma.registration.delete({
+      where: {
+        userId_eventId: {
+          userId,
+          eventId,
+        },
+      },
+    });
   }
 }
 

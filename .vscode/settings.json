@@ -10,6 +10,16 @@
             "name": "eventsync",
             "username": "postgres",
             "database": "eventsync_db"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "database": "eventsync_db",
+            "username": "postgres",
+            "name": "EventSync"
         }
     ]
 }

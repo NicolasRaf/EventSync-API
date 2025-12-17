@@ -6,6 +6,7 @@ import cors from 'cors';
 import { routes } from './presentation/routes';
 import swaggerUi from "swagger-ui-express";
 import swaggerFile from "./swagger.json";
+import { AppError } from "./shared/errors/AppError";
 
 const app = express();
 
@@ -19,16 +20,18 @@ app.use(routes);
 
 // Global Error Handling Middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof Error) {
-    return res.status(400).json({
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
       status: 'error',
       message: err.message
     });
   }
 
+  console.error(err);
+
   return res.status(500).json({
     status: 'error',
-    message: 'Internal server error'
+    message: `Internal server error - ${err.message}`
   });
 });
 

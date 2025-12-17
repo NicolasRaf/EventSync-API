@@ -32,3 +32,19 @@ container.registerSingleton<IFriendshipsRepository>(
   "FriendshipsRepository",
   FriendshipsRepository
 );
+
+import { IMessagesRepository } from "../../modules/messages/repositories/IMessagesRepository";
+import { MessagesRepository } from "../../modules/messages/repositories/implementations/MessagesRepository";
+
+container.registerSingleton<IMessagesRepository>(
+  "MessagesRepository",
+  MessagesRepository
+);
+
+import { IReviewsRepository } from "../../modules/events/repositories/IReviewsRepository";
+import { ReviewsRepository } from "../../modules/events/repositories/implementations/ReviewsRepository";
+
+container.registerSingleton<IReviewsRepository>(
+  "ReviewsRepository",
+  ReviewsRepository
+);

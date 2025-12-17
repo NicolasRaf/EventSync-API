@@ -27,25 +27,49 @@ model User {
   sentFriendRequests     Friendship[] @relation("Requester")
   receivedFriendRequests Friendship[] @relation("Addressee")
 
+  sentMessages     Message[] @relation("Sender")
+  receivedMessages Message[] @relation("Receiver")
+
+  reviews Review[]
+
   @@map("users")
 }
 
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  senderId String
+  sender   User   @relation("Sender", fields: [senderId], references: [id])
+
+  receiverId String
+  receiver   User   @relation("Receiver", fields: [receiverId], references: [id])
+
+  @@map("messages")
+}
+
 model Event {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  date        DateTime
-  location    String
+  id           String       @id @default(uuid())
+  title        String
+  description  String
+  date         DateTime
+  location     String?
+  locationType LocationType @default(IN_PERSON)
+  onlineUrl    String?
 
   // Relacionamento com User (Organizador)
   organizerId String
   organizer   User   @relation(fields: [organizerId], references: [id])
+
+  overallRating Float?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Inscrições que ele fez como participante
   registrations Registration[]
+  reviews       Review[]
 
   @@map("events")
 }
@@ -61,7 +85,8 @@ model Registration {
   user   User   @relation(fields: [userId], references: [id])
 
   eventId String
-  event   Event  @relation(fields: [eventId], references: [id])
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  status  String @default("PENDING") // PENDING, APPROVED, REJECTED
 
   @@unique([userId, eventId])
   @@map("registrations")
@@ -71,6 +96,11 @@ enum Role {
   ADMIN
   ORGANIZER
   PARTICIPANT
+}
+
+enum LocationType {
+  ONLINE
+  IN_PERSON
 }
 
 model Friendship {
@@ -83,4 +113,20 @@ model Friendship {
   createdAt   DateTime @default(now())
 
   @@map("friendships")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, eventId])
+  @@map("reviews")
 }

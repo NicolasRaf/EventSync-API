@@ -1,12 +1,14 @@
 import { inject, injectable } from "tsyringe";
 import { IEventsRepository } from "../../repositories/IEventsRepository";
-import { Event } from "@prisma/client";
+import { Event, LocationType } from "@prisma/client";
 
 interface ICreateEventRequest {
   title: string;
   description: string;
   date: Date;
-  location: string;
+  location?: string;
+  locationType: LocationType;
+  onlineUrl?: string;
   organizerId: string;
 }
 
@@ -22,6 +24,8 @@ export class CreateEventUseCase {
     description,
     date,
     location,
+    locationType,
+    onlineUrl,
     organizerId,
   }: ICreateEventRequest): Promise<Event> {
     const event = await this.eventsRepository.create({
@@ -29,6 +33,8 @@ export class CreateEventUseCase {
       description,
       date,
       location,
+      locationType,
+      onlineUrl,
       organizer: {
         connect: {
           id: organizerId,
